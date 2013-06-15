@@ -23,7 +23,7 @@ package com.github.kevinsawicki.http;
 
 import static org.junit.Assert.assertEquals;
 
-import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public class EncodeTest {
    * Verify encoding of URLs
    */
   @Test
-  public void encode() {
+  public void encode() throws IOException {
     assertEquals("http://google.com", HttpRequest.encode("http://google.com"));
 
     assertEquals("https://google.com", HttpRequest.encode("https://google.com"));
@@ -99,8 +99,8 @@ public class EncodeTest {
   /**
    * Encoding malformed URI
    */
-  @Test(expected = HttpRequestException.class)
-  public void encodeMalformedUri() {
+  @Test(expected = IOException.class)
+  public void encodeMalformedUri() throws IOException {
     HttpRequest.encode("\\m/");
   }
 }

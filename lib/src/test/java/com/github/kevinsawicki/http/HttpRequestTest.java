@@ -41,7 +41,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -125,29 +124,24 @@ public class HttpRequestTest extends ServerTestCase {
   /**
    * Create request with malformed URL
    */
-  @Test(expected = HttpRequestException.class)
-  public void malformedStringUrl() {
+  @Test(expected = IOException.class)
+  public void malformedStringUrl() throws IOException {
     get("\\m/");
   }
 
   /**
    * Create request with malformed URL
    */
-  @Test
-  public void malformedStringUrlCause() {
-    try {
-      delete("\\m/");
-      fail("Exception not thrown");
-    } catch (HttpRequestException e) {
-      assertNotNull(e.getCause());
-    }
+  @Test(expected = IOException.class)
+  public void malformedStringUrlCause() throws IOException {
+    delete("\\m/");
   }
 
   /**
    * Set request buffer size to negative value
    */
   @Test(expected = IllegalArgumentException.class)
-  public void negativeBufferSize() {
+  public void negativeBufferSize() throws IOException {
     get("http://localhost").bufferSize(-1);
   }
 
@@ -1753,7 +1747,7 @@ public class HttpRequestTest extends ServerTestCase {
    * Verify hostname verifier is set and accepts all
    */
   @Test
-  public void verifierAccepts() {
+  public void verifierAccepts() throws IOException {
     HttpRequest request = get("https://localhost");
     HttpsURLConnection connection = (HttpsURLConnection) request
         .getConnection();
@@ -1766,7 +1760,7 @@ public class HttpRequestTest extends ServerTestCase {
    * Verify single hostname verifier is created across all calls
    */
   @Test
-  public void singleVerifier() {
+  public void singleVerifier() throws IOException {
     HttpRequest request1 = get("https://localhost").trustAllHosts();
     HttpRequest request2 = get("https://localhost").trustAllHosts();
     assertNotNull(((HttpsURLConnection) request1.getConnection())
@@ -1782,7 +1776,7 @@ public class HttpRequestTest extends ServerTestCase {
    * Verify single SSL socket factory is created across all calls
    */
   @Test
-  public void singleSslSocketFactory() {
+  public void singleSslSocketFactory() throws IOException {
     HttpRequest request1 = get("https://localhost").trustAllCerts();
     HttpRequest request2 = get("https://localhost").trustAllCerts();
     assertNotNull(((HttpsURLConnection) request1.getConnection())
@@ -1828,8 +1822,8 @@ public class HttpRequestTest extends ServerTestCase {
     try {
       post(url).send(stream);
       fail("Exception not thrown");
-    } catch (HttpRequestException e) {
-      assertEquals(readCause, e.getCause());
+    } catch (IOException e) {
+      assertEquals(readCause, e);
     }
   }
 
@@ -1866,8 +1860,8 @@ public class HttpRequestTest extends ServerTestCase {
     try {
       post(url).ignoreCloseExceptions(false).send(stream);
       fail("Exception not thrown");
-    } catch (HttpRequestException e) {
-      assertEquals(closeCause, e.getCause());
+    } catch (IOException e) {
+      assertEquals(closeCause, e);
     }
   }
 
