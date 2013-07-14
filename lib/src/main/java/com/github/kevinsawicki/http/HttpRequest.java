@@ -1362,8 +1362,13 @@ public class HttpRequest {
    */
   public int code() throws IOException {
       closeOutput();
-      return getConnection().getResponseCode();
-  }
+      try {
+        return getConnection().getResponseCode();
+      } catch (Throwable t) {
+        // Sometimes servers return invalid (non int) response codes
+        throw new IOException(t);
+      }
+    }
 
   /**
    * Set the value of the given {@link AtomicInteger} to the status code of the
