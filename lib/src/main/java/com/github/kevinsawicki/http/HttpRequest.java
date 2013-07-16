@@ -1366,7 +1366,7 @@ public class HttpRequest {
         return getConnection().getResponseCode();
       } catch (Throwable t) {
         // Sometimes servers return invalid (non int) response codes
-        throw new IOException(t);
+        throw new IOException(t.getMessage());
       }
     }
 
